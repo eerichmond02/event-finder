@@ -24,14 +24,14 @@ class App extends Component {
             <h1>Event Finder</h1>
             <ul className= "tabs">
               <CustomLink label='Home' to='/' exact={true}/>
-              <CustomLink label='Search' to='/search'/>
+              <CustomLink label='Search' to='/search' exact={true}/>
               <CustomLink label='Saved Events' to='/saved' exact={true}/>
             </ul>
           </div>
           <div>
             <Route path='/' exact component={Home}/>
             <Route path='/search' exact component={Search}/>
-            <Route path='/search/results' exact component={Results}/>
+            <Route path='/results' exact component={Results}/>
             <Route path='/saved' exact />
           </div>
         </div>

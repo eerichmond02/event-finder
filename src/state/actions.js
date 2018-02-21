@@ -65,7 +65,8 @@ export const getTicketMasterEvents = (startDate, endDate, type, city, state, lat
 		if (type === 'All') {
 			categoryStr = '';
 		}
-		axios.get(ticketmaster_url + categoryStr + locationStr + '&startDateTime=' + startDate + '&endDateTime=' + endDate).then(({data}) => {
+		console.log(ticketmaster_url + categoryStr + locationStr + '&startDateTime=' + startDate + 'Z&endDateTime=' + endDate + 'Z');
+		axios.get(ticketmaster_url + categoryStr + locationStr + '&startDateTime=' + startDate + 'Z&endDateTime=' + endDate + 'Z').then(({data}) => {
 	    let {_embedded} = data;
 	    let newArray = _embedded.events.map(event => (
 	    	transformTicketmaster(event)

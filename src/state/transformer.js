@@ -1,8 +1,11 @@
 import axios from 'axios';
 import { ticketmaster_url, eventbrite_url, eventbrite_token } from './types';
 import { Event, Location, Time } from './reducer';
+import moment from 'moment';
 
 export const transformEventbrite = (event) => {
+	let start_date = event.start.local.replace(/T/, ' ');
+	let end_date = event.start.local.replace(/T/, ' ');
 	let image_url;
 	if (event.logo) {
 		image_url = event.logo.url;
@@ -25,8 +28,8 @@ export const transformEventbrite = (event) => {
   	event.url,
   	[event.category_id],
   	[image_url],
-  	new Time(event.start.timezone, event.start.local),
-  	new Time(event.end.timezone, event.end.local),
+  	new Time(event.start.timezone, start_date),
+  	new Time(event.end.timezone, end_date),
   	venue
   );
 }
@@ -47,9 +50,9 @@ export const transformTicketmaster = (event) => {
   	event.url,
   	categories,
   	images,
-  	new Time(event.dates.timezone, event.dates.start.dateTime),
+  	new Time(event.dates.timezone, (event.dates.start.localDate + ' ' + event.dates.start.localTime)),
   	{},
-  	new Location(event._embedded.venues[0].name, event._embedded.venues[0].address.line1, event._embedded.venues[0].city, event._embedded.venues[0].state.stateCode)
+  	new Location(event._embedded.venues[0].name, event._embedded.venues[0].address.line1, event._embedded.venues[0].city.name, event._embedded.venues[0].state.stateCode)
   );
 }
 
