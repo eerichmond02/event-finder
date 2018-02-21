@@ -1,0 +1,32 @@
+html, body {
+  max-width: 1000px;
+  margin: auto;
+}
+
+.App {
+  margin-top: 25px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.card {
+  overflow: auto;
+}
+
+img {
+  display: block;
+}
+
+button {
+  display: block;
+}
+
+h4 {
+  margin-top: 15px;
+}
+
+.tabs {
+  margin-bottom: 25px;
+}
