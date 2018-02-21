@@ -3,7 +3,7 @@ import { ticketmaster_url, eventbrite_url, eventbrite_token } from './types';
 import { Event, Location, Time } from './reducer';
 import moment from 'moment';
 
-export const transformEventbrite = (event) => {
+export const transformEventbrite = (event, idx) => {
 	let start_date = event.start.local.replace(/T/, ' ');
 	let end_date = event.start.local.replace(/T/, ' ');
 	let image_url;
@@ -17,6 +17,8 @@ export const transformEventbrite = (event) => {
 		else { venue.address = data.address.address_1 }
 		venue.city = data.address.city
 		venue.state = data.address.region;
+		venue.latitude = Number(data.address.latitude);
+		venue.longitude = Number(data.address.longitude);
 	})
 	.catch(err => {
 		console.log(err);
@@ -30,11 +32,12 @@ export const transformEventbrite = (event) => {
   	[image_url],
   	new Time(event.start.timezone, start_date),
   	new Time(event.end.timezone, end_date),
-  	venue
+  	venue,
+  	idx
   );
 }
 
-export const transformTicketmaster = (event) => {
+export const transformTicketmaster = (event, idx) => {
 	let categories = [];
 	event.classifications.forEach(classification => 
 		categories.push(classification.segment.name)
@@ -52,11 +55,13 @@ export const transformTicketmaster = (event) => {
   	images,
   	new Time(event.dates.timezone, (event.dates.start.localDate + ' ' + event.dates.start.localTime)),
   	{},
-  	new Location(event._embedded.venues[0].name, event._embedded.venues[0].address.line1, event._embedded.venues[0].city.name, event._embedded.venues[0].state.stateCode)
+  	new Location(event._embedded.venues[0].name, event._embedded.venues[0].address.line1, event._embedded.venues[0].city.name, 
+  		event._embedded.venues[0].state.stateCode, Number(event._embedded.location.latitude), Number(event._embedded.location.longitude)),
+  	idx
   );
 }
 
-export const transformEventful = (event) => {
+export const transformEventful = (event, idx) => {
 	let image_url;
 	if (event.image) {
 		image_url = event.image.medium.url;
@@ -70,8 +75,23 @@ export const transformEventful = (event) => {
   	[image_url],
   	new Time(event.olson_path, event.start_time),
   	new Time(event.olson_path, event.stop_time),
-  	new Location(event.venue_name, event.venue_address, event.city_name, event.region_abbr)
+  	new Location(event.venue_name, event.venue_address, event.city_name, event.region_abbr, Number(event.latitude), Number(event.longitude)),
+  	idx
   );
 }
 
-//Event: source, name, descrip, url, categories, images, startTime, endTime, location
+export const transformMockAPI = (event) => {
+	 return new Event(
+  	event.source,
+  	event.name,
+  	event.descrip,
+  	event.url,
+  	event.categories,
+  	event.images,
+  	new Time(event.startTimeZone, event.startTime),
+  	new Time(event.endTimeZone, event.endTime),
+  	new Location(event.locationName, event.locationAddress, event.locationCity, event.locationState, event.locationLat, event.locationLong),
+  	null,
+  	event.id
+  );
+}

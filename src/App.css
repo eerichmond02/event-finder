@@ -11,12 +11,20 @@ h1 {
   text-align: center;
 }
 
+h2 {
+  margin-top: 10px;
+  margin-bottom: 25px;
+}
+
 .card {
   overflow: auto;
 }
 
 img {
+  margin-top: 20px;
   display: block;
+  height: 120px;
+  width: auto;
 }
 
 button {
@@ -29,4 +37,86 @@ h4 {
 
 .tabs {
   margin-bottom: 25px;
+}
+
+.buttonGroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn {
+  margin-bottom: 10px;
+  padding-left: 0px;
+  background-color: white;
+  color: darkblue;
+  outline: none;
+  border: none;
+}
+
+.btn:hover {
+  margin-bottom: 10px;
+  padding-left: 0px;
+  background-color: white;
+  text-decoration: underline !important;
+  color: darkblue;
+  outline: none;
+  border: none;
+}*/
+
+.flex {
+  display: flex;
+  align-items: center;
+  display-content: center;
+}
+
+.eventData {
+  margin-bottom: 25px;
+}
+
+.saveButton {
+  float: right;
+}
+
+.icon {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+#map {
+  width: 100%;
+  height: 400px;
+  background-color: white;
+}
+
+.back {
+  float: right;
+}
+
+#searchButton {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: darkblue;
+  color: white;
+  outline: none;
+  border: none;
+}
+
+#searchButton:hover {
+  margin-bottom: 10px;
+  padding: 10px;
+  background-color: darkblue;
+  color: white;
+  outline: none;
+  border: none;
+}
+
+input {
+  margin-bottom: 5px !important;
+}
+
+.error {
+  margin-bottom: 25px !important;
+  color: red !important;
 }

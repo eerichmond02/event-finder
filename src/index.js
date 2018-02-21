@@ -11,4 +11,11 @@ const Root = () => (
 	</Provider>
 )
 
-ReactDOM.render(<Root />, document.getElementById('root'));
+const renderReact = () => {
+    ReactDOM.render(<Root />, document.getElementById('root'));
+ }
+  
+let script = document.createElement("script")
+script.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyDQMgDtwaciMnXmkBEDFPN6Aij05Z2imSI"
+script.onload = renderReact;
+document.body.appendChild(script)

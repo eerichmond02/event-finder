@@ -42,7 +42,6 @@ class Results extends Component {
 
   componentWillReceiveProps(nextProps) {
   	if (this.state.events !== nextProps.events) {
-  		console.log('receiving props...');
   		this.setState({events: nextProps.events});
   	}
   }

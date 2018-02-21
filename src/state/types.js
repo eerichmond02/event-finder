@@ -4,3 +4,5 @@ export const ticketmaster_url = 'https://app.ticketmaster.com/discovery/v2/event
 export const eventful_url = 'http://api.eventful.com/json/events/search?...&app_key=wG5WzfV8ch7jFRrh'
 export const UPDATE_EVENTS = 'update events';
 export const CLEAR_EVENTS = 'clear events';
+export const UPDATE_SAVED_EVENTS = 'update saved events';
+export const SET_CURRENT_EVENT = 'set current event';

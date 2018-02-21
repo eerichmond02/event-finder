@@ -12,12 +12,18 @@ class Search extends Component {
 			locationFilter: 'nearMe',
 			cityInput: '',
 			stateInput: '',
-			radiusInput: '',
+			radiusInput: 'default',
 			eventType: 'default',
-			startDate: null,
-			endDate: null,
+			startDate: moment(),
+			endDate: moment(),
 			lat: null,
-			long: null
+			long: null,
+			validated: false,
+			cityError: '',
+			radiusError: '',
+			startError: '',
+			endError: '',
+			typeError: ''
 		}
 		this.handleChange = this.handleChange.bind(this);
 		this.handleChangeStart = this.handleChangeStart.bind(this);
@@ -38,19 +44,69 @@ class Search extends Component {
 		}
 	}
 	handleChange(e) {
-    this.setState({[e.target.name]: e.target.value})
+    this.setState({[e.target.name]: e.target.value}, () => {
+    	this.validate();
+    })
   }
 
   handleChangeStart(date) {
-  	this.setState({startDate: moment(date)}, () =>{
+  	this.setState({startDate: moment(date), endDate: moment(date)}, () =>{
   		console.log(this.state.startDate.format('YYYY-MM-DDT00:00:00'));
+  		this.validate();
   	});
   }
 
   handleChangeEnd(date) {
   	this.setState({endDate: moment(date)}, () =>{
   		console.log(this.state.endDate.format('YYYY-MM-DDT23:59:59'));
+  		this.validate();
   	});
+  }
+
+  validate() {
+  	let validated = true;
+  	if (this.state.locationFilter === 'nearMe') {
+  		if (this.state.radiusInput === 'default') {
+  			validated = false;
+  			this.setState({radiusError: 'Radius must be populated.'})
+  		} else {
+  			this.setState({radiusError: ''})
+  		}
+  	}
+  	if (this.state.locationFilter === 'location') {
+  		if (this.state.cityInput === '') {
+  			validated = false;
+  			this.setState({cityError: 'City must be populated.'})
+  		} else {
+  			this.setState({cityError: ''})
+  		}
+  	}
+  	if (this.state.eventType === 'default') {
+  		validated = false;
+  		this.setState({typeError: 'Event type must be populated.'})
+  	} else {
+  		this.setState({typeError: ''})
+  	}
+  	if (!moment(this.state.startDate).isValid()) {
+  		validated = false;
+  		this.setState({startError: 'Start date must be a valid date.'})
+  	} else {
+  		this.setState({startError: ''})
+  	}
+  	if (!moment(this.state.endDate).isValid()) {
+  		validated=false;
+  		this.setState({endError: 'End date must be a valid date.'})
+  	} else {
+  		this.setState({endError: ''})
+  	}
+  	if (this.state.endDate < this.state.startDate) {
+  		validated = false;
+  		this.setState({endError: 'End date must be greater than start date.'})
+  	} else {
+  		this.setState({endError: ''})
+  	}
+  	console.log(validated);
+  	this.setState({validated});
   }
 
 	render() {
@@ -70,6 +126,7 @@ class Search extends Component {
 				        <option value="All">All</option>
 				    </select>
 				    <span className="select-arrow"></span>
+				    <label className="error">{this.state.typeError}</label>
 					</div>		
 					<div className="md-multi-ctrl-field radio">
 						<label>Event Location</label>
@@ -84,19 +141,20 @@ class Search extends Component {
 								<label>Location Radius</label>
 						    <select className="os-default" name="radiusInput" onChange={this.handleChange} value={this.state.radiusInput}>
 						        <option disabled value="default">Select a search radius</option>
-						        <option value="1">1 mile</option>
 						        <option value="5">5 miles</option>
 						        <option value="10">10 miles</option>
 						        <option value="25">25 miles</option>
 						        <option value="50">50 miles</option>
 						    </select>
 						    <span className="select-arrow"></span>
+						    <label className="error">{this.state.radiusError}</label>
 	        		</div>
 	        		:
 	        		<div>
 	        			<label>Location City & State</label>
 	     	        <input className="large-9 columns" type="text" placeholder="City" name="cityInput" onChange={this.handleChange} value={this.state.cityInput}/>
-		        		<input className="large-2 columns" type="text" placeholder="State" name="stateInput" onChange={this.handleChange} value={this.state.stateInput}/>
+		        		<input className="large-3 columns" type="text" placeholder="State" name="stateInput" onChange={this.handleChange} value={this.state.stateInput}/>
+	        			<label className="error block">{this.state.cityError}</label>
 	        		</div>
 	        	}
 	        </div>
@@ -109,7 +167,10 @@ class Search extends Component {
 				    onChange={this.handleChangeStart}
 				    placeholderText="Select a start date"
 				    dateFormat="MM/DD/YYYY"
+				    minDate={moment()}
+  					maxDate={moment().add(12, "months")}
 					/>
+					<label className="error">{this.state.startError}</label>
 					<label>Event Date Range - End</label>
 					<DatePicker
 				    selected={this.state.endDate}
@@ -119,13 +180,17 @@ class Search extends Component {
 				    onChange={this.handleChangeEnd}
 				    placeholderText="Select an end date"
 				    dateFormat="MM/DD/YYYY"
+				    minDate={moment()}
+  					maxDate={moment().add(12, "months")}
+  					showDisabledMonthNavigation
 					/>
-					<button onClick={() => {
+					<label className="error">{this.state.endError}</label>
+					<button className='btn btn-ca' id='searchButton' disabled={!this.state.validated} onClick={() => {
 						this.props.clearEvents();
 						this.props.getEventfulEvents(this.state.startDate.format('YYYYMMDD00'), this.state.endDate.format('YYYYMMDD00'), this.state.eventType, this.state.cityInput, this.state.stateInput, this.state.lat, this.state.long, this.state.radiusInput);
-						this.props.getTicketMasterEvents(this.state.startDate.format('YYYY-MM-DDT00:00:00Z'), this.state.endDate.format('YYYY-MM-DDT23:59:59Z'), this.state.eventType, this.state.cityInput, this.state.stateInput, this.state.lat, this.state.long, this.state.radiusInput);
+						this.props.getTicketMasterEvents(this.state.startDate.format('YYYY-MM-DDT00:00:00'), this.state.endDate.format('YYYY-MM-DDT23:59:59'), this.state.eventType, this.state.cityInput, this.state.stateInput, this.state.lat, this.state.long, this.state.radiusInput);
 						this.props.getEventbriteEvents(this.state.startDate.format('YYYY-MM-DDT00:00:00'), this.state.endDate.format('YYYY-MM-DDT23:59:59'), this.state.eventType, this.state.cityInput, this.state.stateInput, this.state.lat, this.state.long, this.state.radiusInput);
-						this.props.history.push('/search/results');
+						this.props.history.push('/results');
 					}}>Search!</button>
 				</form>
 			</div>

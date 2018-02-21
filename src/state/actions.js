@@ -1,6 +1,6 @@
-import { ticketmaster_url, eventbrite_url, eventbrite_token, eventful_url, UPDATE_EVENTS, CLEAR_EVENTS } from './types';
+import { ticketmaster_url, eventbrite_url, eventbrite_token, eventful_url, UPDATE_EVENTS, CLEAR_EVENTS, UPDATE_SAVED_EVENTS, SET_CURRENT_EVENT } from './types';
 import { Event, Location, Time } from './reducer';
-import { transformEventbrite, transformTicketmaster, transformEventful } from './transformer';
+import { transformEventbrite, transformTicketmaster, transformEventful, transformMockAPI } from './transformer';
 import axios from 'axios';
 
 const categoryCodes = [
@@ -11,9 +11,6 @@ const categoryCodes = [
 	{eventbrite: '110', name: 'Food & Drink', eventful: 'food'} // eventbrite only
 ]
 
-// music, movies_film, food, sports, performing_arts
-
-//location.latitude location.longitude location.within (mi)
 export const getEventbriteEvents = (startDate, endDate, type, city, state, lat, long, radius) => {
 	return (dispatch, getState) => {
 		for (let i = 0; i < categoryCodes.length; i++){
@@ -36,10 +33,10 @@ export const getEventbriteEvents = (startDate, endDate, type, city, state, lat, 
 			locationStr = '&location.latitude=' + lat + '&location.longitude=' + long + '&location.within=' + radius + 'mi';
 		}
 		axios.get(eventbrite_url + '/events/search' + eventbrite_token + categoryStr + locationStr + '&start_date.range_start=' + startDate + '&start_date.range_end=' + endDate).then(({data}) => {
-	    let newArray = data.events.map(event => (
-	    	transformEventbrite(event)
+	    console.log(data);
+	    let newArray = data.events.map((event, idx) => (
+	    	transformEventbrite(event, idx)
 	    ));
-	    console.log(newArray);
 	    dispatch(updateEvents(newArray));
 	  })
 	  .catch(err => {
@@ -48,7 +45,6 @@ export const getEventbriteEvents = (startDate, endDate, type, city, state, lat, 
 	}
 }
 
-//latlong= radius= 
 export const getTicketMasterEvents = (startDate, endDate, type, city, state, lat, long, radius) => {
 	return (dispatch, getState) => {
 		let locationStr = '';
@@ -68,10 +64,9 @@ export const getTicketMasterEvents = (startDate, endDate, type, city, state, lat
 		console.log(ticketmaster_url + categoryStr + locationStr + '&startDateTime=' + startDate + 'Z&endDateTime=' + endDate + 'Z');
 		axios.get(ticketmaster_url + categoryStr + locationStr + '&startDateTime=' + startDate + 'Z&endDateTime=' + endDate + 'Z').then(({data}) => {
 	    let {_embedded} = data;
-	    let newArray = _embedded.events.map(event => (
-	    	transformTicketmaster(event)
+	    let newArray = _embedded.events.map((event, idx) => (
+	    	transformTicketmaster(event, idx)
 	    ));
-	    console.log(newArray);
 	    dispatch(updateEvents(newArray));
 	  })
 	  .catch(err => {
@@ -80,10 +75,6 @@ export const getTicketMasterEvents = (startDate, endDate, type, city, state, lat
 	}
 }
 
-//http://api.eventful.com/json/events/search?...&app_key=wG5WzfV8ch7jFRrh &location=Milwaukee&date=Future
-//2018-02-20T19:00:00 --> YYYYMMDD00-YYYYMMDD00
-
-//location=  Common geocoordinate formats ("32.746682, -117.162741") are also accepted, but the "within" parameter (int) is required in order to set a search radius.
 export const getEventfulEvents = (startDate, endDate, type, city, state, lat, long, radius) => {
 	return (dispatch, getState) => {
 		for (let i = 0; i < categoryCodes.length; i++){
@@ -108,10 +99,9 @@ export const getEventfulEvents = (startDate, endDate, type, city, state, lat, lo
 		axios.get(eventful_url + categoryStr + locationStr + '&date=' + startDate + '-' + endDate).then(({data}) => {
 	    let {events} = data;
 	    console.log(events);
-	    let newArray = events.event.map(event => (
-	    	transformEventful(event)
+	    let newArray = events.event.map((event, idx) => (
+	    	transformEventful(event, idx)
 	    ));
-	    console.log(newArray);
 	    dispatch(updateEvents(newArray));
 	  })
 	  .catch(err => {
@@ -128,6 +118,69 @@ export const clearEvents = () => {
 	return {type: CLEAR_EVENTS}
 }
 
-//source, name, descrip, url, categories, images, startTime, endTime, location
-//timezone, dateTime
-//name, address, city, state
+
+// begin actions for saved events
+
+export const addSavedEvent = (event) => {
+	console.log('adding saved event');
+  return (dispatch, getState) => {
+  	console.log('entered return');
+    let newEvent = {
+      name: event.name,
+      descrip: event.descrip,
+      categories: event.categories,
+      source: event.source,
+      url: event.url,
+      images: event.images,
+      startTime: event.startTime.dateTime,
+      startTimeZone: event.startTime.timeZone,
+      endTime: event.endTime.dateTime,
+      endTimeZone: event.endTime.timeZone,
+      locationName: event.location.name,
+      locationAddress: event.location.address,
+      locationCity: event.location.city,
+      locationState: event.location.state,
+      locationLat: event.location.latitude,
+      locationLong: event.location.longitude      
+    };
+    console.log(newEvent);
+    axios.post('http://5a8d9d33b5a3130012909a72.mockapi.io/api/v1/events', newEvent).then(response => {
+    	console.log('response received');
+      dispatch(fetchSavedEvents());
+    })
+    .catch(err => {
+    	console.log(err);
+    });
+  }
+}
+
+export const fetchSavedEvents = () => {
+	console.log('fetching saved events');
+	return (dispatch, getState) => {
+    axios.get('http://5a8d9d33b5a3130012909a72.mockapi.io/api/v1/events').then(response => {
+      let newArray = response.data.map(event => {
+      	return transformMockAPI(event)
+      });
+      dispatch(updateSavedEvents(newArray));
+    })
+    .catch(err => {
+    	console.log(err);
+    });
+  }
+}
+
+export const updateSavedEvents = (sourcesArr) => {
+	return {type: UPDATE_SAVED_EVENTS, payload: sourcesArr};
+}
+
+export const deleteSavedEvent = (id) => {
+  return(dispatch, getState) => {
+    axios.delete('http://5a8d9d33b5a3130012909a72.mockapi.io/api/v1/events/' + id).then(response => {
+        dispatch(fetchSavedEvents());
+    }) 
+  }
+}
+
+export const setCurrentEvent = (event) => {
+	return{type: SET_CURRENT_EVENT, payload: event}
+}
