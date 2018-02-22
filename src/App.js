@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './ui-toolkit/css/nm-cx/main.css';
 import './App.css';
 import { Link, Route, BrowserRouter } from 'react-router-dom';
-import Home from './Home';
+import About from './About';
 import Search from './Search';
 import Results from './Results';
 import SavedEvents from './SavedEvents';
@@ -23,7 +23,7 @@ class App extends Component {
       <BrowserRouter>
         <div className="App">
           <div>
-            <h1>Event Finder</h1>
+            <h1><span className='header1'>Event</span> <span className='header2'>Finder</span></h1>
             <ul className= "tabs">
               <CustomLink label='Search' to='/' exact={true}/>
               <CustomLink label='Saved Events' to='/saved' exact={true}/>
@@ -31,7 +31,7 @@ class App extends Component {
             </ul>
           </div>
           <div>
-            <Route path='/about' exact component={Home}/>
+            <Route path='/about' exact component={About}/>
             <Route path='/' exact component={Search}/>
             <Route path='/results' exact component={Results}/>
             <Route path='/saved' exact component={SavedEvents}/>

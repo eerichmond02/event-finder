@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import moment from 'moment';
 import Event from './Event';
 import { connect } from 'react-redux';
 
@@ -17,38 +18,47 @@ class Results extends Component {
     	let sortedArr;
     	switch(this.state.sort){
     		case 'name':
-    			console.log('name');
     			sortedArr = this.state.events.sort((a,b) => {
     				return compareName(a,b);
     			})
     			break;
     		case 'dateA':
-    			console.log('dateA');
     			sortedArr = this.state.events.sort((a,b) => {
     				return compareStartTimeAsc(a,b);
     			})
     			break;
     		case 'dateD':
-    			console.log('dateD');
     			sortedArr = this.state.events.sort((a,b) => {
     				return compareStartTimeDesc(a,b);
     			})
     			break;
     	}
-    	console.log(sortedArr);
     	this.setState({events: sortedArr});
     })
   }
 
   componentWillReceiveProps(nextProps) {
   	if (this.state.events !== nextProps.events) {
-  		this.setState({events: nextProps.events});
+  		let sortedArr = removeEarlyEvents(nextProps.events, nextProps.searchParams);
+			sortedArr = sortedArr.sort((a,b) => {
+				return compareName(a,b);
+			});
+			sortedArr.sort((a,b) => {
+	    	return compareStartTimeAsc(a,b);
+	    });
+	  	this.setState({events: sortedArr});
   	}
   }
 
   componentDidMount() {
-  	this.setState({events: this.props.events});
-  	console.log('component mounted: ' + this.props.events);
+  	let sortedArr = removeEarlyEvents(this.props.events, this.props.searchParams);
+		sortedArr = sortedArr.sort((a,b) => {
+			return compareName(a,b);
+		});
+		sortedArr.sort((a,b) => {
+    	return compareStartTimeAsc(a,b);
+    });
+  	this.setState({events: sortedArr});
   }
 
 	render() {
@@ -75,7 +85,8 @@ class Results extends Component {
 
 const mapStateToProps = state => {
   return {
-    events: state.events
+    events: state.events,
+    searchParams: state.searchParams
   }
 }
 
@@ -101,6 +112,25 @@ const compareName = (a,b) => {
   if (a.name > b.name)
     return 1;
   return 0;
+}
+
+const removeEarlyEvents = (arr, params) => {
+	let removeArr = [];
+	let startDate = moment(params.startDate).format('YYYY-MM-DD 00:00:00');
+
+	for (let i = 0; i < arr.length; i++){
+		if (arr[i].startTime.dateTime < startDate){
+			removeArr.push(i);
+		}
+	}
+
+	let newArr = arr;
+	let removed = 0;
+	for (let i = 0; i < removeArr.length; i++){
+		newArr.splice(removeArr[i]-removed, 1);
+		removed += 1;
+	}
+	return newArr;
 }
 
 export default connect(mapStateToProps)(Results);

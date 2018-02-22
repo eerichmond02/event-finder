@@ -1,7 +1,6 @@
 import axios from 'axios';
-import { ticketmaster_url, eventbrite_url, eventbrite_token } from './types';
+import { eventbrite_url, eventbrite_token } from './types';
 import { Event, Location, Time } from './reducer';
-import moment from 'moment';
 
 export const transformEventbrite = (event, idx) => {
 	let start_date = event.start.local.replace(/T/, ' ');
@@ -56,7 +55,7 @@ export const transformTicketmaster = (event, idx) => {
   	new Time(event.dates.timezone, (event.dates.start.localDate + ' ' + event.dates.start.localTime)),
   	{},
   	new Location(event._embedded.venues[0].name, event._embedded.venues[0].address.line1, event._embedded.venues[0].city.name, 
-  		event._embedded.venues[0].state.stateCode, Number(event._embedded.location.latitude), Number(event._embedded.location.longitude)),
+  		event._embedded.venues[0].state.stateCode, Number(event._embedded.venues[0].location.latitude), Number(event._embedded.venues[0].location.longitude)),
   	idx
   );
 }

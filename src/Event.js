@@ -3,7 +3,9 @@ import moment from 'moment';
 import { withRouter } from 'react-router-dom';
 import { addSavedEvent, deleteSavedEvent, setCurrentEvent } from './state/actions';
 import { connect } from 'react-redux';
-import EventDetails from './EventDetails';
+import ticketmasterImg from './ticketmaster.svg';
+import eventbriteImg from './eventbrite.png';
+import eventfulImg from './eventful.png';
 
 const Event = (props) => {
 	console.log(props.event.source + ': ' + props.event.startTime.dateTime);
@@ -41,10 +43,18 @@ const Event = (props) => {
 						<a href={gcalLink} target='_blank' rel='noopener noreferrer'><button className='btn' onClick={ () => {console.log(gcalLink);}}><div className='icon-sysicon-calendar icon'></div>Add to Calendar</button></a>
 						<h6>{props.event.location.name}</h6>
 						<h6>{props.event.location.address + ' ' + props.event.location.city + ' ' + props.event.location.state}</h6>
-						<button onClick={() => {console.log(props); props.setCurrentEvent(props.event); props.history.push('/currentDetails');}}className='btn'><div className='icon-util-moreinfo icon'></div>View More Info</button>
+						<button onClick={() => {props.setCurrentEvent(props.event); props.history.push('/currentDetails');}}className='btn'><div className='icon-util-moreinfo icon'></div>View More Info</button>
 					</div>
 					<div className='large-5 columns flex'>
-						<img src={props.event.images[0]}alt='event'/>
+						<img src={
+							props.event.images[0] ?
+							props.event.images[0] :
+							props.event.source === 'ticketmaster' ?
+							ticketmasterImg :
+							props.event.source === 'eventbrite' ?
+							eventbriteImg :
+							eventfulImg
+						}alt='event'/>
 					</div>
 				</div>
 			</div>

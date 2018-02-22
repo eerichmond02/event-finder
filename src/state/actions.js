@@ -1,5 +1,4 @@
-import { ticketmaster_url, eventbrite_url, eventbrite_token, eventful_url, UPDATE_EVENTS, CLEAR_EVENTS, UPDATE_SAVED_EVENTS, SET_CURRENT_EVENT } from './types';
-import { Event, Location, Time } from './reducer';
+import { ticketmaster_url, eventbrite_url, eventbrite_token, eventful_url, UPDATE_EVENTS, CLEAR_EVENTS, UPDATE_SAVED_EVENTS, SET_CURRENT_EVENT, SET_SEARCH_PARAMS } from './types';
 import { transformEventbrite, transformTicketmaster, transformEventful, transformMockAPI } from './transformer';
 import axios from 'axios';
 
@@ -33,7 +32,6 @@ export const getEventbriteEvents = (startDate, endDate, type, city, state, lat, 
 			locationStr = '&location.latitude=' + lat + '&location.longitude=' + long + '&location.within=' + radius + 'mi';
 		}
 		axios.get(eventbrite_url + '/events/search' + eventbrite_token + categoryStr + locationStr + '&start_date.range_start=' + startDate + '&start_date.range_end=' + endDate).then(({data}) => {
-	    console.log(data);
 	    let newArray = data.events.map((event, idx) => (
 	    	transformEventbrite(event, idx)
 	    ));
@@ -61,7 +59,6 @@ export const getTicketMasterEvents = (startDate, endDate, type, city, state, lat
 		if (type === 'All') {
 			categoryStr = '';
 		}
-		console.log(ticketmaster_url + categoryStr + locationStr + '&startDateTime=' + startDate + 'Z&endDateTime=' + endDate + 'Z');
 		axios.get(ticketmaster_url + categoryStr + locationStr + '&startDateTime=' + startDate + 'Z&endDateTime=' + endDate + 'Z').then(({data}) => {
 	    let {_embedded} = data;
 	    let newArray = _embedded.events.map((event, idx) => (
@@ -98,7 +95,6 @@ export const getEventfulEvents = (startDate, endDate, type, city, state, lat, lo
 		}
 		axios.get(eventful_url + categoryStr + locationStr + '&date=' + startDate + '-' + endDate).then(({data}) => {
 	    let {events} = data;
-	    console.log(events);
 	    let newArray = events.event.map((event, idx) => (
 	    	transformEventful(event, idx)
 	    ));
@@ -183,4 +179,8 @@ export const deleteSavedEvent = (id) => {
 
 export const setCurrentEvent = (event) => {
 	return{type: SET_CURRENT_EVENT, payload: event}
+}
+
+export const setSearchParams = (params) => {
+	return{type: SET_SEARCH_PARAMS, payload: params}
 }

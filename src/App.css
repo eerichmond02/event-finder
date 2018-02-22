@@ -5,6 +5,7 @@ html, body {
 
 .App {
   margin-top: 25px;
+  margin-bottom: 25px;
 }
 
 h1 {
@@ -50,7 +51,7 @@ h4 {
   margin-bottom: 10px;
   padding-left: 0px;
   background-color: white;
-  color: darkblue;
+  color: orange;
   outline: none;
   border: none;
 }
@@ -60,7 +61,7 @@ h4 {
   padding-left: 0px;
   background-color: white;
   text-decoration: underline !important;
-  color: darkblue;
+  color: orange;
   outline: none;
   border: none;
 }*/
@@ -77,6 +78,11 @@ h4 {
 
 .saveButton {
   float: right;
+  color: #5cd6d6;
+}
+
+.saveButton:hover{
+  color: #5cd6d6;
 }
 
 .icon {
@@ -92,12 +98,19 @@ h4 {
 
 .back {
   float: right;
+  color: #5cd6d6;
+}
+
+.back:hover {
+  color: #5cd6d6;
 }
 
 #searchButton {
   margin-bottom: 10px;
   padding: 10px;
-  background-color: darkblue;
+  padding-right: 20px;
+  padding-left: 20px;
+  background-color: orange;
   color: white;
   outline: none;
   border: none;
@@ -106,7 +119,9 @@ h4 {
 #searchButton:hover {
   margin-bottom: 10px;
   padding: 10px;
-  background-color: darkblue;
+  padding-right: 20px;
+  padding-left: 20px;
+  background-color: orange;
   color: white;
   outline: none;
   border: none;
@@ -116,7 +131,64 @@ input {
   margin-bottom: 5px !important;
 }
 
+.radio {
+  margin-bottom: 5px;
+}
+
 .error {
   margin-bottom: 25px !important;
-  color: red !important;
+  color: #cc0000 !important;
+}
+
+.header1 {
+  font-weight: bold;
+  color: #5cd6d6;
+}
+
+.header2 {
+  color: orange;
+}
+
+label {
+  color: grey;
+}
+
+.md-text-field.with-floating-label label:first-of-type {
+  color: grey;
+}
+
+input[type="radio"] + label {
+  margin-top: 20px;
+  margin-left: 8px;
+}
+
+.md-multi-ctrl-field input[type="radio"]:checked {
+  background-color: #29a3a3;
+  border: none;
+}
+
+.uitk-select select.os-default:focus, .uitk-select select.os-default.has-focus {
+      outline: none;
+      border-bottom-width: 2px;
+      border-color: #5cd6d6; }
+
+      a {
+    line-height: inherit;
+    text-decoration: none;
+    color: #29a3a3;
+}
+
+a:visited {
+    color: #29a3a3;
+}
+
+.tabs .tab-title.active a, .tabs .tab-title.active button {
+    background-color: transparent;
+    color: #000000;
+    text-decoration: none;
+    border-color: #29a3a3;
+}
+
+.tabs .tab-title > a:hover {
+  color: #5cd6d6;
 }

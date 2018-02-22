@@ -3,7 +3,7 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'
 import { connect } from 'react-redux';
-import { getTicketMasterEvents, getEventbriteEvents, clearEvents, getEventfulEvents } from './state/actions'
+import { getTicketMasterEvents, getEventbriteEvents, clearEvents, getEventfulEvents, setSearchParams } from './state/actions'
 
 class Search extends Component {
 	constructor(props) {
@@ -28,6 +28,7 @@ class Search extends Component {
 		this.handleChange = this.handleChange.bind(this);
 		this.handleChangeStart = this.handleChangeStart.bind(this);
 		this.handleChangeEnd = this.handleChangeEnd.bind(this);
+		this.validate = this.validate.bind(this);
 	}
 
 	componentWillMount() {
@@ -43,6 +44,23 @@ class Search extends Component {
 		  /* geolocation IS NOT available */
 		}
 	}
+
+	componentDidMount() {
+		if (this.props.searchParams) {
+			this.setState({
+				locationFilter: this.props.searchParams.locationFilter,
+				cityInput: this.props.searchParams.cityInput,
+				stateInput: this.props.searchParams.stateInput,
+				radiusInput: this.props.searchParams.radiusInput,
+				eventType: this.props.searchParams.eventType,
+				startDate: this.props.searchParams.startDate,
+				endDate: this.props.searchParams.endDate
+			}, () => {
+				this.validate();
+			});
+		}
+	}
+
 	handleChange(e) {
     this.setState({[e.target.name]: e.target.value}, () => {
     	this.validate();
@@ -185,11 +203,21 @@ class Search extends Component {
   					showDisabledMonthNavigation
 					/>
 					<label className="error">{this.state.endError}</label>
-					<button className='btn btn-ca' id='searchButton' disabled={!this.state.validated} onClick={() => {
+					<button className='btn btn-ca' id='searchButton' disabled={!this.state.validated} onClick={(e) => {
+						e.preventDefault();
 						this.props.clearEvents();
 						this.props.getEventfulEvents(this.state.startDate.format('YYYYMMDD00'), this.state.endDate.format('YYYYMMDD00'), this.state.eventType, this.state.cityInput, this.state.stateInput, this.state.lat, this.state.long, this.state.radiusInput);
 						this.props.getTicketMasterEvents(this.state.startDate.format('YYYY-MM-DDT00:00:00'), this.state.endDate.format('YYYY-MM-DDT23:59:59'), this.state.eventType, this.state.cityInput, this.state.stateInput, this.state.lat, this.state.long, this.state.radiusInput);
 						this.props.getEventbriteEvents(this.state.startDate.format('YYYY-MM-DDT00:00:00'), this.state.endDate.format('YYYY-MM-DDT23:59:59'), this.state.eventType, this.state.cityInput, this.state.stateInput, this.state.lat, this.state.long, this.state.radiusInput);
+						this.props.setSearchParams({
+							locationFilter: this.state.locationFilter,
+							cityInput: this.state.cityInput,
+							stateInput: this.state.stateInput,
+							radiusInput: this.state.radiusInput,
+							eventType: this.state.eventType,
+							startDate: this.state.startDate,
+							endDate: this.state.endDate
+						})
 						this.props.history.push('/results');
 					}}>Search!</button>
 				</form>
@@ -200,7 +228,8 @@ class Search extends Component {
 
 const mapStateToProps = state => {
   return {
-    events: state.events
+    events: state.events,
+    searchParams: state.searchParams
   }
 }
 
@@ -217,6 +246,9 @@ const mapDispatchToProps = (dispatch) => {
     },
     clearEvents: () => {
     	dispatch(clearEvents());
+    },
+    setSearchParams: (params) => {
+    	dispatch(setSearchParams(params));
     }
   }
 }
