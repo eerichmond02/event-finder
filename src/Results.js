@@ -32,6 +32,8 @@ class Results extends Component {
     				return compareStartTimeDesc(a,b);
     			})
     			break;
+    		default:
+    			break;
     	}
     	this.setState({events: sortedArr});
     })

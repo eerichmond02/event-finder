@@ -22,15 +22,15 @@ class App extends Component {
     return (
       <BrowserRouter>
         <div className="App">
-          <div>
-            <h1><span className='header1'>Event</span> <span className='header2'>Finder</span></h1>
+          <div id="header" className="large-12 columns">
+            <h1 id="title"><span className='header1'>Event</span> <span className='header2'>Finder</span></h1>
             <ul className= "tabs">
               <CustomLink label='Search' to='/' exact={true}/>
               <CustomLink label='Saved Events' to='/saved' exact={true}/>
               <CustomLink label='About' to='/about' exact={true}/>
             </ul>
           </div>
-          <div>
+          <div id="mainContent">
             <Route path='/about' exact component={About}/>
             <Route path='/' exact component={Search}/>
             <Route path='/results' exact component={Results}/>

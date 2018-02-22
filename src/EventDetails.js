@@ -11,7 +11,7 @@ class EventDetails extends Component {
   }
 
   componentDidMount() {
-
+    window.scrollTo(0, 0);
     this.setState({event: this.props.currentEvent}, () => {
       this.createMap();
     });
@@ -47,28 +47,30 @@ class EventDetails extends Component {
       '&location=' + this.state.event.location.address + ' ' + this.state.event.location.city + ' ' + this.state.event.location.state + '&sf=true&output=xml';
     }
     return (
-      <div className='card'>
-        {this.state.event ?
-          <div>
-            <p className='back'><button className='btn back' onClick={() => this.props.history.goBack()}>Go back</button></p>
-            <div className='large-8 columns'>
-              <a href={this.state.event.url} target='_blank' rel='noopener noreferrer'><h2>{this.state.event.name}</h2></a>
-              <h5>{moment(dayOfWeek, 'd').format('ddd') + ' ' + moment(this.state.event.startTime.dateTime.substring(0, 10), 'YYYY-MM-DD').format('MMM DD, YYYY') + ' ' +
-                    moment(this.state.event.startTime.dateTime.substring(11, 19), 'HH:mm:ss').format('h:mm a')}</h5>
-              <a href={gcalLink} target='_blank' rel='noopener noreferrer'><button className='btn' onClick={ () => {console.log(gcalLink);}}><div className='icon-sysicon-calendar icon'></div>Add to Calendar</button></a>
-              <p>{this.state.event.descrip}</p>
-              <h6>{this.state.event.location.name}</h6>
-              <h6>{this.state.event.location.address + ' ' + this.state.event.location.city + ' ' + this.state.event.location.state}</h6>
-              <br />
-              <a href={this.state.event.url} target='_blank' rel='noopener noreferrer'><button className='btn'><div className='icon-util-moreinfo icon'></div>More Info & Get Tickets</button></a>
+      <div className='details'>
+        <div className='card'>
+          {this.state.event ?
+            <div>
+              <p className='back'><button className='btn back' onClick={() => this.props.history.goBack()}>Go back</button></p>
+              <div className='large-7 columns descrip'>
+                <a className='gcal' href={this.state.event.url} target='_blank' rel='noopener noreferrer'><h2>{this.state.event.name}</h2></a>
+                <h5>{moment(dayOfWeek, 'd').format('ddd') + ' ' + moment(this.state.event.startTime.dateTime.substring(0, 10), 'YYYY-MM-DD').format('MMM DD, YYYY') + ' ' +
+                      moment(this.state.event.startTime.dateTime.substring(11, 19), 'HH:mm:ss').format('h:mm a')}</h5>
+                <a href={gcalLink} target='_blank' rel='noopener noreferrer'><button className='btn' onClick={ () => {console.log(gcalLink);}}><div className='icon-sysicon-calendar icon'></div>Add to Calendar</button></a>
+                <p>{this.state.event.descrip}</p>
+                <h6>{this.state.event.location.name}</h6>
+                <h6>{this.state.event.location.address + ' ' + this.state.event.location.city + ' ' + this.state.event.location.state}</h6>
+                <br />
+                <a href={this.state.event.url} target='_blank' rel='noopener noreferrer'><button className='btn'><div className='icon-util-moreinfo icon'></div>More Info & Get Tickets</button></a>
+              </div>
             </div>
+          : <p>Loading...</p>
+          }
+          <div className='large-5 columns'>
+            <div id="map" ref={map => this.map=map}></div>
           </div>
-        : <p>Loading...</p>
-      }
-        <div className='large-4 columns'>
-          <div id="map" ref={map => this.map=map}></div>
+          
         </div>
-        
       </div>
     )
   }
