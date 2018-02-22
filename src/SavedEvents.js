@@ -13,9 +13,20 @@ class SavedEvents extends Component {
   	return (
   		<div>
   			<h2>Saved Events</h2>
-  			{this.props.savedEvents.map((event, idx) => (
-  				<Event event={event} key={idx} saved={true}/>
-  			))}	
+        { this.props.savedLoading ?
+          <div className='loading'>
+            <br />
+            <span className='loading-indicator medium'></span>
+          </div>
+          : this.props.savedEvents.length > 0 ?
+    			this.props.savedEvents.map((event, idx) => (
+    				<Event event={event} key={idx} saved={true}/>
+    			))
+          : 
+          <div>
+            <h4>No events have been saved. Perform a search to save events.</h4>
+          </div>
+        }
   		</div>
   	)
   }
@@ -23,7 +34,8 @@ class SavedEvents extends Component {
 
 const mapStateToProps = state => {
   return {
-    savedEvents: state.savedEvents
+    savedEvents: state.savedEvents,
+    savedLoading: state.savedLoading
   }
 }
 

@@ -8,7 +8,7 @@ class Results extends Component {
 		super(props);
 		this.state = {
 			events: [],
-			sort: 'default'
+			sort: 'default',
 		}
 		this.handleChange = this.handleChange.bind(this);
 	}
@@ -65,19 +65,32 @@ class Results extends Component {
 		return (
 			<div>
 				<h2>Search Results</h2>
-				<div className="uitk-select md-text-field with-floating-label">
-					<label>Sort by:</label>
-			    <select className="os-default" name="sort" onChange={this.handleChange} value={this.state.sort}>
-			        <option disabled value="default">Select a Sort Option</option>
-			        <option value="name">Name</option>
-			        <option value="dateA">Date (Ascending)</option>
-			        <option value="dateD">Date (Descending)</option>
-			    </select>
-			    <span className="select-arrow"></span>
+				{ this.props.eventsLoading ?
+					<div className='loading'>
+						<br />
+						<span className='loading-indicator medium'></span>
+					</div>
+					: this.props.events.length > 0 ?
+					<div>
+						<div className="sort">
+							<label>Sort by:</label>
+					    <select className="os-default" name="sort" onChange={this.handleChange} value={this.state.sort}>
+					        <option disabled value="default">Select a Sort Option</option>
+					        <option value="name">Name</option>
+					        <option value="dateA">Date (Ascending)</option>
+					        <option value="dateD">Date (Descending)</option>
+					    </select>
+					    <span className="select-arrow"></span>
+						</div>
+						{this.state.events.map((event, idx) => (
+							<Event event={event} key={idx}/>
+						))}
 				</div>
-				{this.state.events.map((event, idx) => (
-					<Event event={event} key={idx}/>
-				))}	
+				:
+				<div>
+					<h4>No results found. Please try another search.</h4>
+				</div>
+			}
 			</div>
 		)
 	}
@@ -86,7 +99,8 @@ class Results extends Component {
 const mapStateToProps = state => {
   return {
     events: state.events,
-    searchParams: state.searchParams
+    searchParams: state.searchParams,
+    eventsLoading: state.eventsLoading
   }
 }
 

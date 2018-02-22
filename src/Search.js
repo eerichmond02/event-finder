@@ -29,6 +29,7 @@ class Search extends Component {
 		this.handleChangeStart = this.handleChangeStart.bind(this);
 		this.handleChangeEnd = this.handleChangeEnd.bind(this);
 		this.validate = this.validate.bind(this);
+		this.handleLocationChange = this.handleLocationChange.bind(this);
 	}
 
 	componentWillMount() {
@@ -63,6 +64,12 @@ class Search extends Component {
 
 	handleChange(e) {
     this.setState({[e.target.name]: e.target.value}, () => {
+    	this.validate();
+    })
+  }
+
+  handleLocationChange(e) {
+  	this.setState({locationFilter: e.target.value, cityInput: '', stateInput: ''}, () => {
     	this.validate();
     })
   }
@@ -132,10 +139,10 @@ class Search extends Component {
 			<div>
 				<h2>Search for an event!</h2>
 				<form>
-					<div className="uitk-select md-text-field with-floating-label">
+
 						<label>Event Type</label>
 				    <select className="os-default" name="eventType" onChange={this.handleChange} value={this.state.eventType}>
-				        <option disabled value="default">Select an Event Type</option>
+				        <option disabled value="default">Select an event type</option>
 				        <option value="Music">Music</option>
 				        <option value="Film">Film</option>
 				        <option value="Arts & Theatre">Arts & Theatre</option>
@@ -145,17 +152,17 @@ class Search extends Component {
 				    </select>
 				    <span className="select-arrow"></span>
 				    <label className="error">{this.state.typeError}</label>
-					</div>		
+	
 					<div className="md-multi-ctrl-field radio">
 						<label>Event Location</label>
-	        	<input className="radioButton" id="nearMe" name="locationFilter" type="radio" checked={this.state.locationFilter === 'nearMe'}onChange={this.handleChange} value="nearMe"></input>
+	        	<input className="radioButton" id="nearMe" name="locationFilter" type="radio" checked={this.state.locationFilter === 'nearMe'}onChange={this.handleLocationChange} value="nearMe"></input>
 	          <label className="radioButton" htmlFor="nearMe">Near Me</label>
-	        	<input className="radioButton" id="location" name="locationFilter" type="radio" checked={this.state.locationFilter === 'location'}onChange={this.handleChange} value="location"></input>
+	        	<input className="radioButton" id="location" name="locationFilter" type="radio" checked={this.state.locationFilter === 'location'}onChange={this.handleLocationChange} value="location"></input>
 	          <label className="radioButton" htmlFor="location">Specify Location</label>
 	        </div>
 	        <div className="row">
 	        	{this.state.locationFilter === 'nearMe' ?
-			        <div className="uitk-select md-text-field with-floating-label">
+			        <div>
 								<label>Location Radius</label>
 						    <select className="os-default" name="radiusInput" onChange={this.handleChange} value={this.state.radiusInput}>
 						        <option disabled value="default">Select a search radius</option>
@@ -176,33 +183,41 @@ class Search extends Component {
 	        		</div>
 	        	}
 	        </div>
-	        <label>Event Date Range - Start</label>
-        	<DatePicker
-				    selected={this.state.startDate}
-				    selectsStart
-				    startDate={this.state.startDate}
-				    endDate={this.state.endDate}
-				    onChange={this.handleChangeStart}
-				    placeholderText="Select a start date"
-				    dateFormat="MM/DD/YYYY"
-				    minDate={moment()}
-  					maxDate={moment().add(12, "months")}
-					/>
-					<label className="error">{this.state.startError}</label>
-					<label>Event Date Range - End</label>
-					<DatePicker
-				    selected={this.state.endDate}
-				    selectsEnd
-				    startDate={this.state.startDate}
-				    endDate={this.state.endDate}
-				    onChange={this.handleChangeEnd}
-				    placeholderText="Select an end date"
-				    dateFormat="MM/DD/YYYY"
-				    minDate={moment()}
-  					maxDate={moment().add(12, "months")}
-  					showDisabledMonthNavigation
-					/>
-					<label className="error">{this.state.endError}</label>
+	        <div className='row'>
+		        <div className='large-8 columns datePickerDiv'>
+		        	<div className='large-4 columns datePickerDiv'>
+		        		<label>Event Start Date</label>
+			        	<DatePicker
+							    selected={this.state.startDate}
+							    selectsStart
+							    startDate={this.state.startDate}
+							    endDate={this.state.endDate}
+							    onChange={this.handleChangeStart}
+							    placeholderText="Select a start date"
+							    dateFormat="MM/DD/YYYY"
+							    minDate={moment()}
+			  					maxDate={moment().add(12, "months")}
+								/>
+								<label className="error">{this.state.startError}</label>
+							</div>
+							<div className='large-4 columns datePickerDiv'>
+								<label>Event End Date</label>
+								<DatePicker
+							    selected={this.state.endDate}
+							    selectsEnd
+							    startDate={this.state.startDate}
+							    endDate={this.state.endDate}
+							    onChange={this.handleChangeEnd}
+							    placeholderText="Select an end date"
+							    dateFormat="MM/DD/YYYY"
+							    minDate={moment()}
+			  					maxDate={moment().add(12, "months")}
+			  					showDisabledMonthNavigation
+								/>
+								<label className="error">{this.state.endError}</label>
+							</div>
+						</div>
+					</div>
 					<button className='btn btn-ca' id='searchButton' disabled={!this.state.validated} onClick={(e) => {
 						e.preventDefault();
 						this.props.clearEvents();
@@ -217,7 +232,7 @@ class Search extends Component {
 							eventType: this.state.eventType,
 							startDate: this.state.startDate,
 							endDate: this.state.endDate
-						})
+						});
 						this.props.history.push('/results');
 					}}>Search!</button>
 				</form>

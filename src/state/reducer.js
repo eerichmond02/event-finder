@@ -1,4 +1,4 @@
-import { UPDATE_EVENTS, CLEAR_EVENTS, UPDATE_SAVED_EVENTS, SET_CURRENT_EVENT, SET_SEARCH_PARAMS } from './types';
+import { UPDATE_EVENTS, CLEAR_EVENTS, UPDATE_SAVED_EVENTS, SET_CURRENT_EVENT, SET_SEARCH_PARAMS, SET_EVENTS_LOADING, SET_SAVED_LOADING } from './types';
 
 class Event {
 	constructor(source, name, descrip, url, categories, images, startTime, endTime, location, idx, id) {
@@ -38,7 +38,9 @@ const initialState = {
 	events: [],
 	savedEvents: [],
 	currentEvent: undefined,
-	searchParams: undefined
+	searchParams: undefined,
+	eventsLoading: false,
+	savedLoading: false
 }
 
 const reducer = (state=initialState, action) => {
@@ -67,6 +69,16 @@ const reducer = (state=initialState, action) => {
 			return {
 				...state,
 				searchParams: action.payload
+			}
+		case SET_EVENTS_LOADING:
+			return {
+				...state,
+				eventsLoading: !state.eventsLoading
+			}
+		case SET_SAVED_LOADING:
+			return {
+				...state,
+				savedLoading: !state.savedLoading
 			}
 		default:
 			return state;

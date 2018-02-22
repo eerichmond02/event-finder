@@ -7,3 +7,5 @@ export const CLEAR_EVENTS = 'clear events';
 export const UPDATE_SAVED_EVENTS = 'update saved events';
 export const SET_CURRENT_EVENT = 'set current event';
 export const SET_SEARCH_PARAMS = 'set search params';
+export const SET_EVENTS_LOADING = 'set events loading';
+export const SET_SAVED_LOADING = 'set saved loading';

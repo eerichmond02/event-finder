@@ -1,4 +1,4 @@
-import { ticketmaster_url, eventbrite_url, eventbrite_token, eventful_url, UPDATE_EVENTS, CLEAR_EVENTS, UPDATE_SAVED_EVENTS, SET_CURRENT_EVENT, SET_SEARCH_PARAMS } from './types';
+import { ticketmaster_url, eventbrite_url, eventbrite_token, eventful_url, UPDATE_EVENTS, CLEAR_EVENTS, UPDATE_SAVED_EVENTS, SET_CURRENT_EVENT, SET_SEARCH_PARAMS, SET_EVENTS_LOADING, SET_SAVED_LOADING } from './types';
 import { transformEventbrite, transformTicketmaster, transformEventful, transformMockAPI } from './transformer';
 import axios from 'axios';
 
@@ -12,6 +12,7 @@ const categoryCodes = [
 
 export const getEventbriteEvents = (startDate, endDate, type, city, state, lat, long, radius) => {
 	return (dispatch, getState) => {
+		dispatch(setEventsLoading());
 		for (let i = 0; i < categoryCodes.length; i++){
 			if (categoryCodes[i].name === type) {
 				type = categoryCodes[i].eventbrite;
@@ -36,15 +37,18 @@ export const getEventbriteEvents = (startDate, endDate, type, city, state, lat, 
 	    	transformEventbrite(event, idx)
 	    ));
 	    dispatch(updateEvents(newArray));
+	    dispatch(setEventsLoading());
 	  })
 	  .catch(err => {
 	  	console.log(err);
+	  	dispatch(setEventsLoading());
 	  });
 	}
 }
 
 export const getTicketMasterEvents = (startDate, endDate, type, city, state, lat, long, radius) => {
 	return (dispatch, getState) => {
+		dispatch(setEventsLoading());
 		let locationStr = '';
 		if (city !== '') {
 			if (state !== '') {
@@ -65,15 +69,18 @@ export const getTicketMasterEvents = (startDate, endDate, type, city, state, lat
 	    	transformTicketmaster(event, idx)
 	    ));
 	    dispatch(updateEvents(newArray));
+	    dispatch(setEventsLoading());
 	  })
 	  .catch(err => {
 	  	console.log(err);
+	  	dispatch(setEventsLoading());
 	  });
 	}
 }
 
 export const getEventfulEvents = (startDate, endDate, type, city, state, lat, long, radius) => {
 	return (dispatch, getState) => {
+		dispatch(setEventsLoading());
 		for (let i = 0; i < categoryCodes.length; i++){
 			if (categoryCodes[i].name === type) {
 				type = categoryCodes[i].eventful;
@@ -99,9 +106,11 @@ export const getEventfulEvents = (startDate, endDate, type, city, state, lat, lo
 	    	transformEventful(event, idx)
 	    ));
 	    dispatch(updateEvents(newArray));
+	    dispatch(setEventsLoading());
 	  })
 	  .catch(err => {
 	  	console.log(err);
+	  	dispatch(setEventsLoading());
 	  });
 	}
 }
@@ -111,6 +120,7 @@ export const updateEvents = (eventsArr) => {
 }
 
 export const clearEvents = () => {
+	console.log('clearing')
 	return {type: CLEAR_EVENTS}
 }
 
@@ -120,6 +130,7 @@ export const clearEvents = () => {
 export const addSavedEvent = (event) => {
 	console.log('adding saved event');
   return (dispatch, getState) => {
+  	dispatch(setSavedLoading());
   	console.log('entered return');
     let newEvent = {
       name: event.name,
@@ -139,12 +150,13 @@ export const addSavedEvent = (event) => {
       locationLat: event.location.latitude,
       locationLong: event.location.longitude      
     };
-    console.log(newEvent);
     axios.post('http://5a8d9d33b5a3130012909a72.mockapi.io/api/v1/events', newEvent).then(response => {
     	console.log('response received');
+    	dispatch(setSavedLoading());
       dispatch(fetchSavedEvents());
     })
     .catch(err => {
+    	dispatch(setSavedLoading());
     	console.log(err);
     });
   }
@@ -153,13 +165,16 @@ export const addSavedEvent = (event) => {
 export const fetchSavedEvents = () => {
 	console.log('fetching saved events');
 	return (dispatch, getState) => {
+		dispatch(setSavedLoading());
     axios.get('http://5a8d9d33b5a3130012909a72.mockapi.io/api/v1/events').then(response => {
       let newArray = response.data.map(event => {
       	return transformMockAPI(event)
       });
+      dispatch(setSavedLoading());
       dispatch(updateSavedEvents(newArray));
     })
     .catch(err => {
+    	dispatch(setSavedLoading());
     	console.log(err);
     });
   }
@@ -183,4 +198,12 @@ export const setCurrentEvent = (event) => {
 
 export const setSearchParams = (params) => {
 	return{type: SET_SEARCH_PARAMS, payload: params}
+}
+
+export const setEventsLoading = () => {
+	return{type: SET_EVENTS_LOADING}
+}
+
+export const setSavedLoading = () => {
+	return{type: SET_SAVED_LOADING}
 }
